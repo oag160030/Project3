@@ -50,29 +50,26 @@ public class FPSMotor : MonoBehaviour
     public void Move(Vector3 requestedMovement)
     {
         // store this movement for next FixedUpdate tick
-        //Debug.Log("Move: " + requestedMovement);
         _movementThisFrame = requestedMovement;
     }
 
     public void Turn(float turnAmount)
     {
         // store this rotation for next FixedUpdate tick
-        //Debug.Log("Turn: " + turnAmount);
         _turnAmountThisFrame = turnAmount;
     }
 
     public void Look(float lookAmount)
     {
         // store this rotation for next FixedUpdate tick
-        //Debug.Log("Look: " + lookAmount);
         _lookAmountThisFrame = lookAmount;
     }
 
     public void Jump(float jumpForce)
     {
-        //Debug.Log("Jump!");
         // only allows us to jump if we are on the ground
-        if(_isGrounded == false)
+        Debug.Log("Jump");
+        if (_isGrounded == false)
         {
             return;
         }
@@ -96,7 +93,7 @@ public class FPSMotor : MonoBehaviour
     void ApplyTurn(float rotateAmount)
     {
         // confirm that we actually have rotation, exit early if we don't
-        if(rotateAmount == 0)
+        if (rotateAmount == 0)
         {
             return;
         }
@@ -110,7 +107,7 @@ public class FPSMotor : MonoBehaviour
     void ApplyLook(float lookAmount)
     {
         //confirm that we actually have rotation, exit early if we don't
-        if(lookAmount == 0)
+        if (lookAmount == 0)
         {
             return;
         }

@@ -38,7 +38,6 @@ public class PlayerController : MonoBehaviour
     private void OnEnable()
     {
         _input.MoveInput += OnMove;
-        //_input.SprintInput += OnSprint;
         _input.RotateInput += OnRotate;
         _input.JumpInput += OnJump;
         _input.ShootInput += OnShoot;
@@ -47,7 +46,6 @@ public class PlayerController : MonoBehaviour
     private void OnDisable()
     {
         _input.MoveInput -= OnMove;
-        //_input.SprintInput -= OnSprint;
         _input.RotateInput -= OnRotate;
         _input.JumpInput -= OnJump;
         _input.ShootInput -= OnShoot;
@@ -57,6 +55,7 @@ public class PlayerController : MonoBehaviour
     {
         // incorporate out move speed
         //Debug.Log("Move: " + movement);
+        
         if(Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift))
         {
             _motor.Move(movement * _sprintSpeed);
@@ -67,13 +66,6 @@ public class PlayerController : MonoBehaviour
             _motor.Move(movement * _moveSpeed);
         }
     }
-
-    /*
-    void OnSprint(Vector3 sprint)
-    {
-        _motor.Move(sprint * _sprintSpeed);
-    }
-    */
 
     void OnRotate(Vector3 rotation)
     {

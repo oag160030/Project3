@@ -9,15 +9,20 @@ public class FPSInput : MonoBehaviour
     [SerializeField] bool _invertVertical = false;
 
     public event Action<Vector3> MoveInput = delegate { };
-    //public event Action<Vector3> SprintInput = delegate { };
     public event Action<Vector3> RotateInput = delegate { };
     public event Action JumpInput = delegate { };
     public event Action ShootInput = delegate { };
 
+    Animator anim;
+
+    private void Start()
+    {
+        anim = GetComponent<Animator>();
+    }
+
     void Update()
     {
         DetectMoveInput();
-        //DetectSprintInput();
         DetectRotateInput();
         DetectJumpInput();
         DetectShootInput();
@@ -31,6 +36,7 @@ public class FPSInput : MonoBehaviour
         // if we have either Horizontal or Vertical Input
         if(xInput != 0 || yInput != 0)
         {
+            anim.SetInteger("Condition", 1);
             // convert to local directions, based on player orientation
             Vector3 _horizontalMovement = transform.right * xInput;
             Vector3 _forwardMovement = transform.forward * yInput;
@@ -39,26 +45,12 @@ public class FPSInput : MonoBehaviour
             // notify that we have moved 
             MoveInput?.Invoke(movement);
         }
-    }
-/*
-    void DetectSprintInput()
-    {
-        // process input as a 0 or 1 value, if we have it
-        float xInput = Input.GetAxisRaw("Horizontal");
-        float yInput = Input.GetAxisRaw("Vertical");
-        // if we have either Horizontal or Vertical Input
-        if (xInput != 0 || yInput != 0)
+        else
         {
-            // convert to local directions, based on player orientation
-            Vector3 _horizontalMovement = transform.right * xInput;
-            Vector3 _forwardMovement = transform.forward * yInput;
-            // combine movements into a single vector
-            Vector3 movement = (_horizontalMovement + _forwardMovement).normalized;
-            // notify that we have moved 
-            SprintInput?.Invoke(movement);
+            anim.SetInteger("Condition", 0);
         }
     }
-*/
+
     void DetectRotateInput()
     {
         // get out inputs from input controller
@@ -84,6 +76,7 @@ public class FPSInput : MonoBehaviour
         // Spacebay press
         if (Input.GetKeyDown(KeyCode.Space))
         {
+            anim.SetInteger("Condition", 2);
             JumpInput?.Invoke();
         }
     }
