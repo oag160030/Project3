@@ -22,6 +22,10 @@ public class Player : MonoBehaviour
     Vector3 forward;
     Vector3 right;
 
+    [SerializeField] HatController hat = null;
+    [SerializeField] float throwPower = 500;
+    Rigidbody hatRB;
+
 
     Vector3 moveDirection;
 
@@ -29,11 +33,14 @@ public class Player : MonoBehaviour
     {
         characterAnimator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
+        hatRB = hat.GetComponent<Rigidbody>();
     }
 
     void Update()
     {
         PlayerMovement();
+        //ThrowHat();
+        
     }
 
     void PlayerMovement()
@@ -88,17 +95,15 @@ public class Player : MonoBehaviour
             Quaternion.LookRotation(lookDirection), desiredRotationSpeed);
     }
 
-    void GetInput()
-    {
-        if (Input.GetMouseButtonDown(1))
-        {
-            ThrowHat();
-        }
-    }
-
     void ThrowHat()
     {
-
+        if (Input.GetKey(KeyCode.E))
+        {
+            //characterAnimator.SetInteger("Condition", 3);
+            hatRB.isKinematic = false;
+            hatRB.transform.parent = null;
+            //hatRB.AddForce(transform.forward * throwPower, ForceMode.Impulse);
+        }
     }
 
     void Jump()
