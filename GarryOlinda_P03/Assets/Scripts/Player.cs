@@ -22,25 +22,30 @@ public class Player : MonoBehaviour
     Vector3 forward;
     Vector3 right;
 
-    [SerializeField] HatController hat = null;
-    [SerializeField] float throwPower = 500;
-    Rigidbody hatRB;
-
+    [Header("Animation Smoothing")]
+    [Range(0, 1f)]
+    public float HorizontalAnimSmoothTime = 0.2f;
+    [Range(0, 1f)]
+    public float VerticalAnimTime = 0.2f;
+    [Range(0, 1f)]
+    public float StartAnimTime = 0.3f;
+    [Range(0, 1f)]
+    public float StopAnimTime = 0.15f;
 
     Vector3 moveDirection;
+
+    int jumps = 0;
 
     void Start()
     {
         characterAnimator = GetComponent<Animator>();
         characterController = GetComponent<CharacterController>();
-        hatRB = hat.GetComponent<Rigidbody>();
     }
 
     void Update()
     {
-        PlayerMovement();
-        //ThrowHat();
-        
+        ThrowHat();
+        PlayerMovement();        
     }
 
     void PlayerMovement()
@@ -52,11 +57,10 @@ public class Player : MonoBehaviour
         // move the player
         if (speed > 0.1)
         {
-            characterAnimator.SetInteger("Condition", 1);
+            characterAnimator.SetFloat("Blend", speed, StartAnimTime, Time.deltaTime);
             if (characterController.isGrounded)
             {
                 verticalVelocity = -gravity * Time.deltaTime;
-
             }
             else
             {
@@ -72,10 +76,20 @@ public class Player : MonoBehaviour
         }
         if (speed < 0.1)
         {
-            characterAnimator.SetInteger("Condition", 0);
+            characterAnimator.SetFloat("Blend", speed, StopAnimTime, Time.deltaTime);
         }
 
-        Jump();
+        if (characterController.isGrounded)
+        {
+            jumps = 0; 
+            if (Input.GetKeyDown(KeyCode.Space) && jumps < 1)
+            {
+                Jump();
+                characterAnimator.SetBool("Jumping", false);
+                jumps++;
+            }
+            
+        }
     }
 
     public void LookDirection()
@@ -97,33 +111,47 @@ public class Player : MonoBehaviour
 
     void ThrowHat()
     {
-        if (Input.GetKey(KeyCode.E))
+        if (Input.GetMouseButtonDown(0))
         {
-            //characterAnimator.SetInteger("Condition", 3);
-            hatRB.isKinematic = false;
-            hatRB.transform.parent = null;
-            //hatRB.AddForce(transform.forward * throwPower, ForceMode.Impulse);
+            characterAnimator.SetTrigger("Swing");
+            StartCoroutine(ThrowCoroutine());
         }
+        characterAnimator.SetBool("Throwing", false);
     }
 
-    void Jump()
+    public void Jump()
     {
-        if (characterController.isGrounded)
+        Debug.Log("Jump");
+        characterAnimator.SetTrigger("Jump");
+        StartCoroutine(JumpCoroutine());
+        verticalVelocity = jumpForce;
+        moveVector = forward * inputZ + right * inputX;
+
+        moveVector.y = verticalVelocity * 5;
+
+        LookDirection();
+
+        characterController.Move(moveVector * Time.deltaTime * velocity);
+
+
+    }
+
+    IEnumerator ThrowCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
+        if (!characterAnimator.GetBool("Throwing"))
         {
-            if (Input.GetKeyDown(KeyCode.Space))
-            {
-                Debug.Log("Jump");
-                characterAnimator.SetInteger("Condition", 2);
-                verticalVelocity = jumpForce;
-                moveVector = forward * inputZ + right * inputX;
-
-                moveVector.y = verticalVelocity;
-
-                LookDirection();
-
-                characterController.Move(moveVector * Time.deltaTime * velocity);
-            }
+            characterAnimator.SetBool("Throwing", true);
         }
-        
+            
+    }
+
+    IEnumerator JumpCoroutine()
+    {
+        yield return new WaitForEndOfFrame();
+        if (!characterAnimator.GetBool("Jumping"))
+        {
+            characterAnimator.SetBool("Jumping", true);
+        }
     }
 }
