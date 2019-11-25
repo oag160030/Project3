@@ -64,6 +64,7 @@ public class Player : MonoBehaviour
             }
             else
             {
+                // apply gravity
                 verticalVelocity -= gravity * Time.deltaTime;
             }
 
@@ -127,7 +128,7 @@ public class Player : MonoBehaviour
         verticalVelocity = jumpForce;
         moveVector = forward * inputZ + right * inputX;
 
-        moveVector.y = verticalVelocity * 5;
+        moveVector.y = verticalVelocity;
 
         LookDirection();
 
